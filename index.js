@@ -56,7 +56,7 @@ const newspapers = [
     provider: "The Sun",
     address: "https://www.thesun.co.uk/tech/",
     urlRootFormation: "",
-    baseUrl: false,
+    baseUrl: true,
   },
 ];
 
@@ -114,7 +114,41 @@ const generateArticles = async (providerArr) => {
     });
   });
 };
-generateArticles();
+
+const generateArticlePayload = (response, newspaperAddr) => {
+  const html = response.data;
+  const $ = cheerio.load(html);
+  const articles = [];
+  $('a:contains("NFT")', html).each(function () {
+    // title parsing and removing whitespaces
+    let title = $(this).text();
+    title = title.replace(/^\s+|\s+$/gm, "");
+    title = title.replace(/(\r\n|\n|\r)/gm, "");
+    // URL generation and formatting
+    let url = $(this).attr("href");
+    let parsedUrl = `${newspaperAddr.address}${url}`;
+    let formattedUrl = newspaperAddr.urlRootFormation
+      ? `${newspaperAddr.urlRootFormation}${url}`
+      : parsedUrl;
+
+    if (newspaperAddr.baseUrl) {
+      formattedUrl = url;
+    }
+
+    title = title.replace(/^\s+|\s+$/gm, "");
+    title = title.replace(/(\r\n|\n|\r)/gm, "");
+    // URL generation and formatting
+    console.log(title);
+    articles.push({
+      title,
+      url: formattedUrl,
+      source: newspaperAddr.name,
+      provider: newspaperAddr.provider,
+    });
+  });
+  return articles;
+};
+// generateArticles();
 
 app.get("/", (req, res) => {
   res.json("Welcome to the Crypto API !");
@@ -130,60 +164,23 @@ app.get("/news", (req, res) => {
 app.get("/news/provider/:newspaperId", async (req, res) => {
   const newsPaperId = req.params.newspaperId;
   NFTArticles = [];
-  const newspaperAddr = newspapers.filter(
+  const newspaperProvider = newspapers.filter(
     (newspaper) => newspaper.name == newsPaperId
   )[0];
-  if (!newspaperAddr) {
+  if (!newspaperProvider) {
     console.log("ERROR!!!");
     return res.send(
       `Provider with name ${req.params.newspaperId} was not found. Available providers are : ${availableProviders}`
     );
   }
-  console.log(newspaperAddr);
+  console.log(newspaperProvider);
   axios
-    .get(newspaperAddr.address)
+    .get(newspaperProvider.address)
     .then((response) => {
-      const html = response.data;
-      const $ = cheerio.load(html);
-
-      $('a:contains("NFT")', html).each(function () {
-        // title parsing and removing whitespaces
-        let title = newspaperAddr.textLocation
-          ? $(this).attr(newspaperAddr.textLocation)
-          : $(this).text();
-        title = title.replace(/^\s+|\s+$/gm, "");
-        title = title.replace(/(\r\n|\n|\r)/gm, "");
-        // URL generation and formatting
-        let url = $(this).attr("href");
-        let parsedSource = `${newspaperAddr.address}${url}`;
-        const formattedUrl = newspaperAddr.urlRootFormation
-          ? `${newspaperAddr.urlRootFormation}${url}`
-          : parsedSource;
-
-        if (!newspaperAddr.baseUrl) {
-          parsedSource = url;
-        }
-
-        title = title.replace(/^\s+|\s+$/gm, "");
-        title = title.replace(/(\r\n|\n|\r)/gm, "");
-        // URL generation and formatting
-
-        NFTArticles.push({
-          title,
-          url: parsedSource,
-          source: newspaperAddr.name,
-          provider: newspaperAddr.provider,
-        });
-        console.log(NFTArticles);
-      });
-      NFTArticles = removeDuplicates(NFTArticles, "url");
-      res.json(NFTArticles);
+      const payloadJSON = generateArticlePayload(response, newspaperProvider);
+      res.json(payloadJSON);
     })
     .catch((err) => console.log(err));
-
-  //   axios.get(newspaperAddr).then((respnse) => {
-  //     res.json(newspaperAddr);
-  //   });
 });
 
 app.listen(PORT, () => {
