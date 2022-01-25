@@ -121,7 +121,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/news", (req, res) => {
-  //   generateArticles(newspapers);
+  generateArticles(newspapers);
   NFTArticles = removeDuplicates(NFTArticles, "url");
   console.log("Total number of articles found: ", NFTArticles.length);
   res.json(NFTArticles);
