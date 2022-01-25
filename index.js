@@ -2,12 +2,13 @@ const PORT = process.env.PORT || 8000;
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
-
+const helper_methods = require("./src/helper_method");
 const app = express();
 // NFT top sales https://www.nft-stats.com/top-sales/7d
 // https://www.nbcnews.com/tech-media
 // https://www.theverge.com/tech
 // ONLY NFT https://cointelegraph.com/tags/nft - (unstable)
+
 const newspapers = [
   {
     name: "coindesk",
@@ -65,100 +66,27 @@ const availableProviders = newspapers.map((provider) => provider.name);
 const articles = [];
 let NFTArticles = [];
 
-function removeDuplicates(originalArray, prop) {
-  var newArray = [];
-  var lookupObject = {};
-
-  for (var i in originalArray) {
-    lookupObject[originalArray[i][prop]] = originalArray[i];
-  }
-
-  for (i in lookupObject) {
-    newArray.push(lookupObject[i]);
-  }
-  return newArray;
-}
-
-const generateArticles = async (providerArr) => {
-  newspapers.forEach((source) => {
-    console.log(source);
-    axios.get(source.address).then((response) => {
-      const html = response.data;
-      const $ = cheerio.load(html);
-      const searchQuery = source.textSource
-        ? `a:contains("${source.textLocation}")`
-        : 'a:contains("NFT")';
-      console.log(searchQuery);
-      $(searchQuery, html).each(function () {
-        // title parsing and removing whitespaces
-        let title = source.textLocation
-          ? $(this).attr(source.textLocation)
-          : $(this).text();
-        title = title.replace(/^\s+|\s+$/gm, "");
-        title = title.replace(/(\r\n|\n|\r)/gm, "");
-        // URL generation and formatting
-        const url = $(this).attr("href");
-        const parsedSource = `${source.address}${url}`;
-        const formattedUrl = source.urlRootFormation
-          ? `${source.urlRootFormation}${url}`
-          : parsedSource;
-
-        NFTArticles.push({
-          title,
-          url: formattedUrl,
-          source: source.name,
-          provider: source.provider,
-        });
-        console.log(NFTArticles);
-      });
-    });
-  });
-};
-
-const generateArticlePayload = (response, newspaperAddr) => {
-  const html = response.data;
-  const $ = cheerio.load(html);
-  const articles = [];
-  $('a:contains("NFT")', html).each(function () {
-    // title parsing and removing whitespaces
-    let title = $(this).text();
-    title = title.replace(/^\s+|\s+$/gm, "");
-    title = title.replace(/(\r\n|\n|\r)/gm, "");
-    // URL generation and formatting
-    let url = $(this).attr("href");
-    let parsedUrl = `${newspaperAddr.address}${url}`;
-    let formattedUrl = newspaperAddr.urlRootFormation
-      ? `${newspaperAddr.urlRootFormation}${url}`
-      : parsedUrl;
-
-    if (newspaperAddr.baseUrl) {
-      formattedUrl = url;
-    }
-
-    title = title.replace(/^\s+|\s+$/gm, "");
-    title = title.replace(/(\r\n|\n|\r)/gm, "");
-    // URL generation and formatting
-    console.log(title);
-    articles.push({
-      title,
-      url: formattedUrl,
-      source: newspaperAddr.name,
-      provider: newspaperAddr.provider,
-    });
-  });
-  return articles;
-};
-// generateArticles();
+setInterval(async () => {
+  console.log("**************************************");
+  console.log("Fetching data .....");
+  console.log("**************************************");
+  NFTArticles = await helper_methods.getNewsFromAllProviders(newspapers);
+}, 300 * 1000);
 
 app.get("/", (req, res) => {
   res.json("Welcome to the Crypto API !");
 });
 
-app.get("/news", (req, res) => {
-  generateArticles(newspapers);
-  NFTArticles = removeDuplicates(NFTArticles, "url");
-  console.log("Total number of articles found: ", NFTArticles.length);
-  res.json(NFTArticles);
+app.get("/news", async (req, res) => {
+  if (NFTArticles.length > 0) {
+    console.log("Using cached data");
+    res.json(NFTArticles);
+  } else {
+    NFTArticles = await helper_methods.getNewsFromAllProviders(newspapers);
+    console.log(NFTArticles.length);
+    console.log("RETURN !!!!!");
+    res.json(NFTArticles);
+  }
 });
 
 app.get("/news/provider/:newspaperId", async (req, res) => {
@@ -177,7 +105,10 @@ app.get("/news/provider/:newspaperId", async (req, res) => {
   axios
     .get(newspaperProvider.address)
     .then((response) => {
-      const payloadJSON = generateArticlePayload(response, newspaperProvider);
+      const payloadJSON = helper_methods.generateArticlePayload(
+        response,
+        newspaperProvider
+      );
       res.json(payloadJSON);
     })
     .catch((err) => console.log(err));
