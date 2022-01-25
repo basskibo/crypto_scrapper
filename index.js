@@ -110,11 +110,10 @@ app.get("/crypto/prices", async (req, res) => {
         coin.name = helper_methods.sliceCryptoName(coin);
         coin.circuilatingSupply =
           helper_methods.sliceCryptocircuilatingSupply(coin);
+        coin.marketCap = helper_methods.sliceMarketCap(coin);
         cryptos.push(coin);
         console.log(coin);
       }
-
-      //   console.log(parentElem);
     });
     res.json(cryptos);
   }

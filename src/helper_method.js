@@ -128,10 +128,22 @@ const sliceCryptocircuilatingSupply = (coin) => {
   }
 };
 
+const sliceMarketCap = (coin) => {
+  try {
+    const circ = coin.marketCap;
+    const newStr = circ.split("$");
+    console.log(newStr);
+    return newStr[2];
+  } catch (exc) {
+    console.log("there was error sliceMarketCap...");
+  }
+};
+
 module.exports = {
   generateArticlePayload: generateArticlePayload,
   getNewsFromAllProviders: getNewsFromAllProviders,
   getCryptoPrices: getCryptoPrices,
   sliceCryptoName: sliceCryptoName,
   sliceCryptocircuilatingSupply: sliceCryptocircuilatingSupply,
+  sliceMarketCap: sliceMarketCap,
 };
