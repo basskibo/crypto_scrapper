@@ -1,0 +1,16 @@
+{
+    "crypto": {
+        "BTC": {
+            "fullName": "Bitcoin",
+            "abbrevation": "BTC"
+        },
+        "ETH": {
+            "fullName": "Ethereum",
+            "abbrevation": "ETH"
+        },
+        "USDT": {
+            "fullName": "Tether",
+            "abbrevation": "USDT"
+        },
+    }
+}
