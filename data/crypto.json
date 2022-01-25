@@ -1,16 +1,54 @@
 {
-    "crypto": {
-        "BTC": {
-            "fullName": "Bitcoin",
-            "abbrevation": "BTC"
-        },
-        "ETH": {
-            "fullName": "Ethereum",
-            "abbrevation": "ETH"
-        },
-        "USDT": {
-            "fullName": "Tether",
-            "abbrevation": "USDT"
-        },
-    }
+    "top50Currencies": [
+        "Bitcoin",
+        "Ethereum",
+        "Binance-Coin",
+        "Tether",
+        "Solana",
+        "Cardano",
+        "XRP",
+        "Polkadot",
+        "Dogecoin",
+        "SHIBA-INU",
+        "USD-Coin",
+        "Terra",
+        "Avalanche",
+        "Uniswap",
+        "Chainlink",
+        "Wrapped-Bitcoin",
+        "Binance-USD",
+        "Litecoin",
+        "Polygon",
+        "Algorand",
+        "Bitcoin-Cash",
+        "VeChain",
+        "Crypto-com-Coin",
+        "Axie-Infinity",
+        "Internet-Computer",
+        "Stellar",
+        "Cosmos",
+        "THETA",
+        "Filecoin",
+        "TRON",
+        "FTX-Token",
+        "Ethereum-Classic",
+        "Fantom",
+        "Dai",
+        "Bitcoin-BEP2",
+        "Elrond",
+        "Hedera",
+        "Tezos",
+        "NEAR-Protocol",
+        "The-Graph",
+        "PancakeSwap",
+        "Decentraland",
+        "Monero",
+        "Aave",
+        "EOS",
+        "Flow",
+        "Klaytn",
+        "IOTA",
+        "Kusama",
+        "eCash"
+    ]
 }

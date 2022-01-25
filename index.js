@@ -5,6 +5,7 @@ const cheerio = require("cheerio");
 const helper_methods = require("./src/helper_method");
 const app = express();
 const config = require("./config/config");
+const cryptoData = require("./data/crypto.json");
 const newspapers = config.newspapers;
 const cryptoPriceProvider = config.cryptoPriceProvider;
 const availableProviders = newspapers.map((provider) => provider.name);
@@ -67,7 +68,7 @@ app.get("/news/provider/:newspaperId", async (req, res) => {
 /**
  * description CRYPTO PRICES
  */
-app.get("/crypto/prices", async (req, res) => {
+app.get("/crypto/price", async (req, res) => {
   if (CRYPTO_PRICES.length > 0) {
     console.log("Using cached data");
     res.json(NEWS_ALL);
@@ -117,6 +118,10 @@ app.get("/crypto/prices", async (req, res) => {
     });
     res.json(cryptos);
   }
+});
+
+app.get("/crypto/top", (req, res) => {
+  res.json(cryptoData.top50Currencies);
 });
 
 app.listen(PORT, () => {
