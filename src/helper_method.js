@@ -91,7 +91,47 @@ const getNewsFromAllProviders = async (newspapers) => {
   return articles;
 };
 
+/**
+ * description Get crypto information and prices
+ * @params {Object} provider - provider of crypto prices
+ * @params {Object} response - response from cheerio
+ */
+const getCryptoPrices = async (provider, response) => {
+  const html = response.data;
+  const $ = cheerio.load(html);
+  let articles = [];
+  const elemSelector =
+    "#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr";
+  $(elemSelector).each((parentIdx, parentElem) => {
+    console.log(parentIdx);
+  });
+};
+
+const sliceCryptoName = (coin) => {
+  try {
+    const fullname = coin.name;
+    const shortLength = coin.shortName;
+    return fullname.substring(shortLength);
+  } catch (exc) {
+    console.log("there was error slicing crypto name...");
+  }
+};
+
+const sliceCryptocircuilatingSupply = (coin) => {
+  try {
+    const circ = coin.circuilatingSupply;
+    const newStr = circ.split(" ");
+    const circulatingParsed = `${newStr[0]} ${coin.shortName}`;
+    return circulatingParsed;
+  } catch (exc) {
+    console.log("there was error sliceCryptocircuilatingSupply...");
+  }
+};
+
 module.exports = {
   generateArticlePayload: generateArticlePayload,
   getNewsFromAllProviders: getNewsFromAllProviders,
+  getCryptoPrices: getCryptoPrices,
+  sliceCryptoName: sliceCryptoName,
+  sliceCryptocircuilatingSupply: sliceCryptocircuilatingSupply,
 };

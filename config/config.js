@@ -50,4 +50,8 @@ module.exports = {
       baseUrl: true,
     },
   ],
+  cryptoPriceProvider: {
+    name: "coinmarketcap",
+    address: "https://coinmarketcap.com/all/views/all/",
+  },
 };

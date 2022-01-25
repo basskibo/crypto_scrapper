@@ -107,6 +107,9 @@ app.get("/crypto/prices", async (req, res) => {
               keyIdx++;
             }
           });
+        coin.name = helper_methods.sliceCryptoName(coin);
+        coin.circuilatingSupply =
+          helper_methods.sliceCryptocircuilatingSupply(coin);
         cryptos.push(coin);
         console.log(coin);
       }
