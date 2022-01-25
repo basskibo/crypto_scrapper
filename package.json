@@ -1,0 +1,25 @@
+{
+  "name": "crypto_news_scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basskibo/tech_news_scrapper.git"
+  },
+  "author": "Bojan Jagetic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/basskibo/tech_news_scrapper/issues"
+  },
+  "homepage": "https://github.com/basskibo/tech_news_scrapper#readme",
+  "dependencies": {
+    "axios": "^0.25.0",
+    "cheerio": "^1.0.0-rc.10",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15"
+  }
+}

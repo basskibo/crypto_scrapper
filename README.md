@@ -1,1 +1,1 @@
-# crypto_scrapper
+# tech_news_scrapper
