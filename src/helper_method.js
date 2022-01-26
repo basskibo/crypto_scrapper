@@ -109,8 +109,10 @@ const getCryptoPrices = async (provider, response) => {
 
 const sliceCryptoName = (coin) => {
   try {
+    console.log(coin);
     const fullname = coin.name;
-    const shortLength = coin.shortName;
+    const shortLength = coin.shortName.length;
+    console.log(fullname.substring(shortLength));
     return fullname.substring(shortLength);
   } catch (exc) {
     console.log("there was error slicing crypto name...");

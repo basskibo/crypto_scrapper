@@ -54,4 +54,16 @@ module.exports = {
     name: "coinmarketcap",
     address: "https://coinmarketcap.com/all/views/all/",
   },
+  cryptoKeys: [
+    "rank",
+    "name",
+    "shortName",
+    "marketCap",
+    "price",
+    "circuilatingSupply",
+    "volume",
+    "Volume / Market Cap",
+    "24h%",
+    "7d%",
+  ],
 };
