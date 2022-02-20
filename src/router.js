@@ -18,7 +18,7 @@ setInterval(async () => {
 	console.log("Fetching data .....")
 	console.log("**************************************")
 	NEWS_ALL = await helper_methods.getNewsFromAllProviders(newspapers)
-}, 300 * 1000)
+}, 60 * 1000 * 1000)
 
 async function routes(fastify, options) {
 	fastify.get("/", (req, res) => {
@@ -71,77 +71,77 @@ async function routes(fastify, options) {
 	/**
 	 * description CRYPTO PRICES
 	 */
-	fastify.get("/crypto/price", async (req, res) => {
-		if (CRYPTO_PRICES.length > 0) {
-			console.log("Using cached data")
-			res.json(NEWS_ALL)
-		} else {
-			const keys = config.cryptoKeys
-			console.log(`There is no data, fetching from ${cryptoPriceProvider.address}`)
-			const { data } = await axios.get(cryptoPriceProvider.address)
+	// fastify.get("/crypto/price", async (req, res) => {
+	// 	if (CRYPTO_PRICES.length > 0) {
+	// 		console.log("Using cached data")
+	// 		res.json(NEWS_ALL)
+	// 	} else {
+	// 		const keys = config.cryptoKeys
+	// 		console.log(`There is no data, fetching from ${cryptoPriceProvider.address}`)
+	// 		const { data } = await axios.get(cryptoPriceProvider.address)
 
-			const cryptos = []
-			const $ = cheerio.load(data)
-			const elemSelector = "table > tbody > tr"
+	// 		const cryptos = []
+	// 		const $ = cheerio.load(data)
+	// 		const elemSelector = "table > tbody > tr"
 
-			$(elemSelector).each((parentIdx, parentElem) => {
-				let keyIdx = 0
-				const coin = {}
-				if (parentIdx < 20) {
-					$(parentElem)
-						.children()
-						.each((children, childElem) => {
-							let tdValue = $(childElem).text()
-							if (keyIdx === 1 || keyIdx === 6) {
-							}
-							if (tdValue) {
-								coin[keys[keyIdx]] = tdValue
-								keyIdx++
-							}
-						})
-					coin.name = helper_methods.sliceCryptoName(coin)
-					coin.circuilatingSupply =
-						helper_methods.sliceCryptocircuilatingSupply(coin)
-					coin.marketCap = helper_methods.sliceMarketCap(coin)
-					cryptos.push(coin)
-					console.log(coin)
-				}
-			})
-			return cryptos
-		}
-	})
-	fastify.get("/crypto/:cryptoName", async (req, res) => {
-		const keys = config.cryptoKeys
-		const cryptoName = req.params.cryptoName
-		console.log(`There is no data, fetching from ${cryptoPriceProvider.address}`)
-		const { data } = await axios.get(cryptoPriceProvider.address)
+	// 		$(elemSelector).each((parentIdx, parentElem) => {
+	// 			let keyIdx = 0
+	// 			const coin = {}
+	// 			if (parentIdx < 20) {
+	// 				$(parentElem)
+	// 					.children()
+	// 					.each((children, childElem) => {
+	// 						let tdValue = $(childElem).text()
+	// 						if (keyIdx === 1 || keyIdx === 6) {
+	// 						}
+	// 						if (tdValue) {
+	// 							coin[keys[keyIdx]] = tdValue
+	// 							keyIdx++
+	// 						}
+	// 					})
+	// 				coin.name = helper_methods.sliceCryptoName(coin)
+	// 				coin.circuilatingSupply =
+	// 					helper_methods.sliceCryptocircuilatingSupply(coin)
+	// 				coin.marketCap = helper_methods.sliceMarketCap(coin)
+	// 				cryptos.push(coin)
+	// 				console.log(coin)
+	// 			}
+	// 		})
+	// 		return cryptos
+	// 	}
+	// })
+	// fastify.get("/crypto/:cryptoName", async (req, res) => {
+	// 	const keys = config.cryptoKeys
+	// 	const cryptoName = req.params.cryptoName
+	// 	console.log(`There is no data, fetching from ${cryptoPriceProvider.address}`)
+	// 	const { data } = await axios.get(cryptoPriceProvider.address)
 
-		const cryptos = []
-		const $ = cheerio.load(data)
-		const elemSelector = "table > tbody > tr"
+	// 	const cryptos = []
+	// 	const $ = cheerio.load(data)
+	// 	const elemSelector = "table > tbody > tr"
 
-		$(elemSelector).each((parentIdx, parentElem) => {
-			let keyIdx = 0
-			const coin = {}
-			if (parentIdx < 20) {
-				$(parentElem)
-					.children()
-					.each((children, childElem) => {
-						let tdValue = $(childElem).text()
-						if (tdValue) {
-							coin[keys[keyIdx]] = tdValue
-							keyIdx++
-						}
-					})
-				coin.name = helper_methods.sliceCryptoName(coin)
-				if (cryptoName === coin.name || cryptoName === coin.shortName) {
-					cryptos.push(coin)
-					console.log(coin)
-				}
-			}
-		})
-		return cryptos
-	})
+	// 	$(elemSelector).each((parentIdx, parentElem) => {
+	// 		let keyIdx = 0
+	// 		const coin = {}
+	// 		if (parentIdx < 20) {
+	// 			$(parentElem)
+	// 				.children()
+	// 				.each((children, childElem) => {
+	// 					let tdValue = $(childElem).text()
+	// 					if (tdValue) {
+	// 						coin[keys[keyIdx]] = tdValue
+	// 						keyIdx++
+	// 					}
+	// 				})
+	// 			coin.name = helper_methods.sliceCryptoName(coin)
+	// 			if (cryptoName === coin.name || cryptoName === coin.shortName) {
+	// 				cryptos.push(coin)
+	// 				console.log(coin)
+	// 			}
+	// 		}
+	// 	})
+	// 	return cryptos
+	// })
 
 	fastify.get("/crypto/list", async (req, res) => {
 		const keys = config.cryptoKeys

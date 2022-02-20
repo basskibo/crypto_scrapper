@@ -6,12 +6,15 @@ const router = require("./src/router")
 fastify.register(router)
 
 // Run the server!
-const start = async () => {
-	try {
-		await fastify.listen(PORT)
-	} catch (err) {
-		fastify.log.error(err)
-		process.exit(1)
-	}
-}
-start()
+fastify.listen(PORT, "0.0.0.0", () => {
+	console.log("Server listening on port: ", PORT)
+})
+// const start = async () => {
+// 	try {
+// 		await fastify.listen(PORT)
+// 	} catch (err) {
+// 		fastify.log.error(err)
+// 		process.exit(1)
+// 	}
+// }
+// start()
