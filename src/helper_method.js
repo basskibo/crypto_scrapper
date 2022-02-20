@@ -15,15 +15,19 @@ const removeDuplicates = (originalArray, prop) => {
 	return newArray
 }
 
-const generateArticlePayload = (response, newspaperAddr) => {
+const generateArticlePayload = (response, newspaperAddr, keyword) => {
 	const html = response.data
 	const $ = cheerio.load(html)
 	let articles = []
-	$('a:contains("NFT")', html).each(function () {
+	const key = keyword ? keyword : "crypto"
+	console.log(key)
+	$(`a:contains(${JSON.stringify(key)})`, html).each(function () {
 		// title parsing and removing whitespaces
+		console
 		let title = $(this).text()
 		title = title.replace(/^\s+|\s+$/gm, "")
 		title = title.replace(/(\r\n|\n|\r)/gm, "")
+		title = title.replace(/\u00AD/g, "") // replacing &shy
 		// URL generation and formatting
 		let url = $(this).attr("href")
 		let parsedUrl = `${newspaperAddr.address}${url}`
@@ -56,12 +60,13 @@ const getNewsFromAllProviders = async (newspapers, keyword) => {
 	console.log("fetching news for ", keyword)
 	for (let i = 0; i < newspapers.length; i++) {
 		const source = newspapers[i]
+		const key = keyword ? keyword : "crypto"
 		await axios.get(source.address).then((response) => {
 			const html = response.data
 			const $ = cheerio.load(html)
 			const searchQuery = source.textSource
 				? `a:contains("${source.textLocation}")`
-				: `a:contains(${JSON.stringify(keyword)})`
+				: `a:contains(${JSON.stringify(key)})`
 
 			console.log(searchQuery)
 			$(searchQuery, html).each(function () {
