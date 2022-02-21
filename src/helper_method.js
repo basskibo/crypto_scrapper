@@ -1,5 +1,5 @@
-const cheerio = require("cheerio")
-const axios = require("axios")
+import cheerio from "cheerio"
+import axios from "axios"
 
 const removeDuplicates = (originalArray, prop) => {
 	var newArray = []
@@ -147,11 +147,12 @@ const sliceMarketCap = (coin) => {
 	}
 }
 
-module.exports = {
-	generateArticlePayload: generateArticlePayload,
-	getNewsFromAllProviders: getNewsFromAllProviders,
-	getCryptoPrices: getCryptoPrices,
-	sliceCryptoName: sliceCryptoName,
-	sliceCryptocircuilatingSupply: sliceCryptocircuilatingSupply,
-	sliceMarketCap: sliceMarketCap,
+export {
+	removeDuplicates,
+	generateArticlePayload,
+	getNewsFromAllProviders,
+	getCryptoPrices,
+	sliceCryptoName,
+	sliceCryptocircuilatingSupply,
+	sliceMarketCap,
 }

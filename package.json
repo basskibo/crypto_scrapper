@@ -8,6 +8,7 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/basskibo/tech_news_scrapper.git"
@@ -21,8 +22,13 @@
   "dependencies": {
     "axios": "^0.25.0",
     "bitcore-lib": "^8.25.25",
+    "chalk": "^5.0.0",
     "cheerio": "^1.0.0-rc.10",
     "cryptocurrency-unit-convert": "^1.2.8",
-    "fastify": "^3.27.2"
+    "dotenv": "^16.0.0",
+    "fastify": "^3.27.2",
+    "moment": "^2.29.1",
+    "node-cron": "^3.0.0",
+    "redis": "^4.0.3"
   }
 }

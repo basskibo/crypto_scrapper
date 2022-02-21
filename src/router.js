@@ -1,26 +1,33 @@
-const helper_methods = require("./helper_method")
-const axios = require("axios")
-const cheerio = require("cheerio")
+import {
+	removeDuplicates,
+	generateArticlePayload,
+	getNewsFromAllProviders,
+} from "./helper_method.js"
+import axios from "axios"
 // const app = express()
-const config = require("../config/config")
+import { newspapers } from "../config/config.js"
 // const cryptoData = require("./data/crypto.json")
-const newspapers = config.newspapers
-const cryptoPriceProvider = config.cryptoPriceProvider
+
+// const cryptoPriceProvider = config.cryptoPriceProvider
 const availableProviders = newspapers.map((provider) => provider.name)
-const cryptoData = require("../data/crypto.json")
+// const cryptoData = import("../data/crypto.json")
+import { test } from "../services/scr_crypto.js"
 
 const articles = []
 let NEWS_ALL = [],
 	CRYPTO_PRICES = []
 
+import { cronTimer } from "../cron/cron.js"
+
+cronTimer()
 setInterval(async () => {
 	console.log("**************************************")
 	console.log("Fetching data .....")
 	console.log("**************************************")
-	NEWS_ALL = await helper_methods.getNewsFromAllProviders(newspapers)
+	NEWS_ALL = await getNewsFromAllProviders(newspapers)
 }, 60 * 1000 * 1000)
 
-async function routes(fastify, options) {
+export default async function routes(fastify, options) {
 	fastify.get("/", (req, res) => {
 		return "Welcome to the Crypto API !"
 	})
@@ -33,7 +40,7 @@ async function routes(fastify, options) {
 			console.log("Using cached data")
 			return NEWS_ALL
 		} else {
-			NEWS_ALL = await helper_methods.getNewsFromAllProviders(newspapers, "Bitcoin")
+			NEWS_ALL = await getNewsFromAllProviders(newspapers, "Bitcoin")
 			console.log(
 				`Fetch completed, successfully scrfastifyed data from ${NEWS_ALL.length} articles`
 			)
@@ -59,11 +66,7 @@ async function routes(fastify, options) {
 				)
 		}
 		const results = await axios.get(newspaperProvider.address)
-		const payloadJSON = helper_methods.generateArticlePayload(
-			results,
-			newspaperProvider,
-			keyword
-		)
+		const payloadJSON = generateArticlePayload(results, newspaperProvider, keyword)
 		console.log(payloadJSON)
 		return payloadJSON
 	})
@@ -99,10 +102,10 @@ async function routes(fastify, options) {
 	// 							keyIdx++
 	// 						}
 	// 					})
-	// 				coin.name = helper_methods.sliceCryptoName(coin)
+	// 				coin.name = sliceCryptoName(coin)
 	// 				coin.circuilatingSupply =
-	// 					helper_methods.sliceCryptocircuilatingSupply(coin)
-	// 				coin.marketCap = helper_methods.sliceMarketCap(coin)
+	// 					sliceCryptocircuilatingSupply(coin)
+	// 				coin.marketCap = sliceMarketCap(coin)
 	// 				cryptos.push(coin)
 	// 				console.log(coin)
 	// 			}
@@ -133,7 +136,7 @@ async function routes(fastify, options) {
 	// 						keyIdx++
 	// 					}
 	// 				})
-	// 			coin.name = helper_methods.sliceCryptoName(coin)
+	// 			coin.name = sliceCryptoName(coin)
 	// 			if (cryptoName === coin.name || cryptoName === coin.shortName) {
 	// 				cryptos.push(coin)
 	// 				console.log(coin)
@@ -143,40 +146,42 @@ async function routes(fastify, options) {
 	// 	return cryptos
 	// })
 
-	fastify.get("/crypto/list", async (req, res) => {
-		const keys = config.cryptoKeys
-		console.log(`There is no data, fetching from ${cryptoPriceProvider.address}`)
-		const { data } = await axios.get(cryptoPriceProvider.address)
+	// fastify.get("/crypto/list", async (req, res) => {
+	// 	const keys = config.cryptoKeys
+	// 	console.log(`There is no data, fetching from ${cryptoPriceProvider.address}`)
+	// 	const { data } = await axios.get(cryptoPriceProvider.address)
 
-		const cryptos = []
-		const $ = cheerio.load(data)
-		const elemSelector = "table > tbody > tr"
+	// 	const cryptos = []
+	// 	const $ = cheerio.load(data)
+	// 	const elemSelector = "table > tbody > tr"
 
-		$(elemSelector).each((parentIdx, parentElem) => {
-			let keyIdx = 0
-			const coin = {}
-			if (parentIdx < 20) {
-				$(parentElem)
-					.children()
-					.each((children, childElem) => {
-						let tdValue = $(childElem).text()
-						if (keyIdx === 1 || keyIdx === 2) {
-							coin[keys[keyIdx]] = tdValue
-						}
-						keyIdx++
-					})
-				coin.name = helper_methods.sliceCryptoName(coin)
+	// 	$(elemSelector).each((parentIdx, parentElem) => {
+	// 		let keyIdx = 0
+	// 		const coin = {}
+	// 		if (parentIdx < 20) {
+	// 			$(parentElem)
+	// 				.children()
+	// 				.each((children, childElem) => {
+	// 					let tdValue = $(childElem).text()
+	// 					if (keyIdx === 1 || keyIdx === 2) {
+	// 						coin[keys[keyIdx]] = tdValue
+	// 					}
+	// 					keyIdx++
+	// 				})
+	// 			coin.name = sliceCryptoName(coin)
 
-				cryptos.push(coin)
-				console.log(coin)
-			}
-		})
-		return cryptos
-	})
+	// 			cryptos.push(coin)
+	// 			console.log(coin)
+	// 		}
+	// 	})
+	// 	return cryptos
+	// })
 
 	fastify.get("/crypto/top50", (req, res) => {
 		return cryptoData.top50Currencies
 	})
 }
 
-module.exports = routes
+// cron.schedule("* * * * *", function () {
+// 	console.log("running a task every minute")
+// })
