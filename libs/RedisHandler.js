@@ -1,8 +1,17 @@
 import { createClient } from "redis"
-
-console.log(process.env)
 const client = createClient({
-	url: "redis://alice:foobared@awesome.redis.server:6380",
+	url: "redis://localhost:6379",
 })
 
-console.log(client)
+client.connect()
+
+export async function connect() {
+	await client.hSet(
+		`kibo-${new Date().getTime()}`,
+		JSON.stringify({ name: "car", time: new Date() })
+	)
+	// const value = await client.hGet(`kibo-${new Date().getTime}`)
+	// console.log(client)
+
+	// console.log(value)
+}

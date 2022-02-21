@@ -17,7 +17,7 @@ const articles = []
 let NEWS_ALL = [],
 	CRYPTO_PRICES = []
 
-import { cronTimer } from "../cron/cron.js"
+import { cronTimer } from "../libs/cron.js"
 
 cronTimer()
 setInterval(async () => {
