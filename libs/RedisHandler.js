@@ -3,11 +3,7 @@ const client = createClient({
 	url: "redis://localhost:6379",
 })
 
-if (process.env.REDIS_URL) {
-	client.connect({ url: process.env.REDIS_URL })
-} else {
-	client.connect()
-}
+client.connect({ url: process.env.REDIS_URL })
 
 export async function connect() {
 	await client.hSet(
