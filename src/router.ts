@@ -1,23 +1,18 @@
 import {
-	removeDuplicates,
 	generateArticlePayload,
 	getNewsFromAllProviders,
+	Article,
 } from "./helper_method.js"
 import axios from "axios"
-// const app = express()
-import { newspapers } from "../config/config.js"
-// const cryptoData = require("./data/crypto.json")
+import { newspapers } from "./config/config.js"
+// import { test } from "../services/scr_crypto.js"
+import { cronTimer } from "./libs/cron.js"
+import cryptoData from "./data/crypto.json"
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify"
 
-// const cryptoPriceProvider = config.cryptoPriceProvider
-const availableProviders = newspapers.map((provider) => provider.name)
-// const cryptoData = import("../data/crypto.json")
-import { test } from "../services/scr_crypto.js"
-
-const articles = []
-let NEWS_ALL = [],
-	CRYPTO_PRICES = []
-
-import { cronTimer } from "../libs/cron.js"
+// const articles: Article[] = []
+let NEWS_ALL: Article[] = []
+// let CRYPTO_PRICES: any[] = []
 
 cronTimer()
 setInterval(async () => {
@@ -27,15 +22,18 @@ setInterval(async () => {
 	NEWS_ALL = await getNewsFromAllProviders(newspapers)
 }, 60 * 1000 * 1000)
 
-export default async function routes(fastify, options) {
-	fastify.get("/", (req, res) => {
+export default async function routes(
+	fastify: FastifyInstance,
+	_options: any
+): Promise<void> {
+	fastify.get("/", async (_req: FastifyRequest, _res: FastifyReply) => {
 		return "Welcome to the Crypto API !"
 	})
 
 	/**
 	 * description Crypto news / NFT
 	 */
-	fastify.get("/news", async (req, res) => {
+	fastify.get("/news", async (_req: FastifyRequest, _res: FastifyReply) => {
 		if (NEWS_ALL.length > 0) {
 			console.log("Using cached data")
 			return NEWS_ALL
@@ -51,25 +49,31 @@ export default async function routes(fastify, options) {
 	/**
 	 * description Crypto news / NFT
 	 */
-	fastify.get("/news/provider/:newspaperId", async (req, res) => {
-		const newsPaperId = req.params.newspaperId
-		const keyword = req.headers.keyword
-		console.log(`Looking for keyword ${keyword} on provider ${newsPaperId}`)
-		const newspaperProvider = newspapers.filter(
-			(newspaper) => newspaper.name == newsPaperId
-		)[0]
-		if (!newspaperProvider) {
-			return res
-				.status(404)
-				.send(
-					`Provider with name ${req.params.newspaperId} was not found. Available providers are : ${availableProviders}`
-				)
+	fastify.get(
+		"/news/provider/:newspaperId",
+		async (
+			req: FastifyRequest<{ Params: { newspaperId: string } }>,
+			res: FastifyReply
+		) => {
+			const newsPaperId = req.params.newspaperId
+			const keyword = (req.headers.keyword as string) || undefined
+			console.log(`Looking for keyword ${keyword} on provider ${newsPaperId}`)
+			const newspaperProvider = newspapers.filter(
+				(newspaper) => newspaper.name == newsPaperId
+			)[0]
+			if (!newspaperProvider) {
+				return res
+					.status(404)
+					.send(
+						`Provider with name ${req.params.newspaperId} was not found. Available providers are : ${newspapers.map((p) => p.name).join(", ")}`
+					)
+			}
+			const results = await axios.get<string>(newspaperProvider.address)
+			const payloadJSON = generateArticlePayload(results, newspaperProvider, keyword)
+			console.log(payloadJSON)
+			return payloadJSON
 		}
-		const results = await axios.get(newspaperProvider.address)
-		const payloadJSON = generateArticlePayload(results, newspaperProvider, keyword)
-		console.log(payloadJSON)
-		return payloadJSON
-	})
+	)
 
 	/**
 	 * description CRYPTO PRICES
@@ -177,11 +181,8 @@ export default async function routes(fastify, options) {
 	// 	return cryptos
 	// })
 
-	fastify.get("/crypto/top50", (req, res) => {
+	fastify.get("/crypto/top50", async (_req: FastifyRequest, _res: FastifyReply) => {
 		return cryptoData.top50Currencies
 	})
 }
 
-// cron.schedule("* * * * *", function () {
-// 	console.log("running a task every minute")
-// })

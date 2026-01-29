@@ -1,4 +1,14 @@
-const newspapers = [
+export interface Newspaper {
+	name: string
+	provider: string
+	address: string
+	urlRootFormation?: string
+	baseUrl?: boolean
+	textSource?: boolean
+	textLocation?: string
+}
+
+export const newspapers: Newspaper[] = [
 	{
 		name: "coindesk",
 		provider: "Coin Desk",
@@ -64,21 +74,3 @@ const newspapers = [
 	},
 ]
 
-// cryptoPriceProvider: {
-// 	name: "coinmarketcap",
-// 	address: "https://coinmarketcap.com/all/views/all/",
-// },
-// cryptoKeys: [
-// 	"rank",
-// 	"name",
-// 	"shortName",
-// 	"marketCap",
-// 	"price",
-// 	"circuilatingSupply",
-// 	"volume",
-// 	"Volume / Market Cap",
-// 	"24h%",
-// 	"7d%",
-// ],
-
-export { newspapers }

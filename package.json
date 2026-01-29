@@ -2,10 +2,11 @@
   "name": "crypto_news_scrapper",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
@@ -30,5 +31,12 @@
     "moment": "^2.29.1",
     "node-cron": "^3.0.0",
     "redis": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/cheerio": "^0.22.31",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
   }
 }
